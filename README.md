@@ -1,0 +1,250 @@
+Arch Linux + dwm
+
+1. Connect to Wi-F
+iwctl
+station wlan0 connect "SSID"
+exit
+
+2. Partition the disk
+cfdisk /dev/nvme0n1
+Create: EFI 512M, Linux Swap 16G, Linux filesystem (rest). Write -> yes, then Quit.
+
+3. Format & mount
+mkfs.fat -F32 /dev/nvme0n1p1
+mkswap /dev/nvme0n1p2
+mkfs.ext4 /dev/nvme0n1p3
+mount /dev/nvme0n1p3 /mnt
+mkdir -p /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot
+swapon /dev/nvme0n1p2
+
+4. Install base system
+pacstrap -K /mnt base linux linux-firmware base-devel nano sudo networkmanager git
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+
+5. Base config
+ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime
+hwclock --systohc
+nano /etc/locale.gen   # uncomment en_US.UTF-8
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "myhostname" > /etc/hostname
+passwd
+useradd -m -G wheel -s /bin/bash myuser
+passwd myuser
+EDITOR=nano visudo   # uncomment %wheel ALL=(ALL) ALL
+
+6. Bootloader
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+systemctl enable NetworkManager
+exit
+umount -R /mnt
+reboot
+
+7. After reboot network + X11
+nmcli device wifi connect "SSID" password "PASS"
+sudo pacman -S xorg-server xorg-xinit git base-devel libx11 libxft libxinerama libxrandr
+
+8. Build st + dwm
+su
+pacman -S sudo
+git clone https://git.suckless.org/st
+cd st && sudo make clean install && cd ..
+git clone https://git.suckless.org/dwm
+cd dwm && sudo make clean install && cd ..
+nano ~/.xinitrc
+exec dwm
+
+9. Install paru
+git clone https://aur.archlinux.org/paru.git
+cd paru
+makepkg -si
+paru -S <package>     # install from repo or AUR
+paru -Syu             # update everything incl. AUR
+paru -Ss <keyword>    # search
+usage:
+  paru -S <package>      - if the package exists in the official repo, installs it like
+                            pacman; if not, searches the AUR, downloads the build recipe
+                            (PKGBUILD), shows it to you to review, then builds + installs it
+  paru will pause and show the PKGBUILD before compiling - read it if unsure, then press
+    Enter/y to continue
+  paru -Sc               - clean up old cached build files to save disk space
+  paru -Qua               - shows only AUR packages that have pending updates
+
+10. Fonts + test X
+sudo pacman -S noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-jetbrains-mono-nerd
+fc-cache -fv
+startx
+
+11. Multi-monitor + Thai/English keyboard
+xrandr | grep connected
+xrandr --output HDMI-1 --auto --right-of eDP-1
+setxkbmap -layout us,th -option grp:caps_toggle
+exec dwm
+
+12. NVIDIA driver
+sudo pacman -Syu
+sudo pacman -S nvidia-open nvidia-utils nvidia-settings
+sudo nano /etc/mkinitcpio.conf
+MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)
+sudo mkinitcpio -P
+sudo nano /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet nvidia-drm.modeset=1"
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+sudo reboot
+
+13. Bluetooth
+sudo pacman -S bluez bluez-utils
+sudo systemctl enable --now bluetooth
+
+14. Audio PipeWire
+sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
+systemctl --user enable --now pipewire pipewire-pulse wireplumber
+wpctl status
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 50%
+wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+wpctl set-mute @DEFAULT_AUDIO_SINK@ 1
+wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
+usage:
+  wpctl status                     - lists every audio/video device with an ID number,
+                                      shows which one is the current default (marked *)
+  wpctl set-default <ID>           - switch default output/input to that device ID
+  @DEFAULT_AUDIO_SINK@             - shorthand for "whatever the current output device is",
+                                      so you don't need to look up its ID every time
+  @DEFAULT_AUDIO_SOURCE@           - same shorthand but for the microphone/input
+  bind these commands to keyboard shortcuts in dwm's config.h for physical volume keys
+
+15. Browser
+sudo pacman -S firefox
+firefox
+
+16. Webcam + video
+sudo pacman -S v4l-utils ffmpeg
+ffplay -f v4l2 -i /dev/video0
+ffplay -f v4l2 -video_size 1280x720 -framerate 30 -i /dev/video0
+ffmpeg -f v4l2 -i /dev/video0 -frames:v 1 photo.jpg
+ffmpeg -f v4l2 -framerate 30 -video_size 1280x720 -i /dev/video0 -f pulse -i default -c:v libx264 -c:a aac output.mp4
+v4l2-ctl --device=/dev/video0 --list-ctrls
+v4l2-ctl --device=/dev/video0 --set-ctrl=brightness=50
+v4l2-ctl --device=/dev/video0 --set-ctrl=contrast=30
+usage:
+  ffplay window     - just a live preview, press q or Ctrl+C to close, nothing is saved
+  ffmpeg photo cmd  - grabs exactly 1 frame and saves it as photo.jpg in the current folder
+  ffmpeg record cmd - records video+mic together until you press q or Ctrl+C, saves as
+                      output.mp4 in the current folder
+  /dev/video0       - default webcam device; if you have multiple cameras, check with:
+                      v4l2-ctl --list-devices
+  --list-ctrls      - shows every adjustable setting (brightness, contrast, exposure, etc.)
+                      and its current value/range, so you know what's tunable before setting it
+
+17. Screenshot
+sudo pacman -S maim
+maim screenshot.png
+maim -s selection.png
+usage:
+  maim screenshot.png  - captures the whole screen instantly, saves to current folder
+  maim -s selection.png - crosshair cursor appears, click+drag to select an area,
+                          release to capture just that area
+  maim -s | xclip -selection clipboard -t image/png  - capture a selection straight to
+                          clipboard instead of a file (needs xclip: sudo pacman -S xclip)
+  bind these to a keybind in dwm's config.h for a proper screenshot hotkey
+
+18. File explorer + archive tools
+sudo pacman -S tar zip unzip p7zip
+sudo pacman -S nnn
+nnn
+usage: nnn is keyboard-driven, no mouse needed
+  arrow keys / hjkl  - move up/down/into folders
+  l or Enter         - open file or enter folder
+  h or Backspace     - go to parent folder
+  q                  - quit
+  Space              - select a file (multi-select)
+  y                  - copy selected file(s)
+  x                  - cut selected file(s)
+  p                  - paste
+  d                  - toggle detail view (permissions, size, date)
+  / then type         - search files in current folder
+  gg / G             - jump to top / bottom of list
+  ! or x then r      - open a plugin/run shell action on selection (needs nnn plugins)
+  Ctrl+n / Ctrl+p    - browse command history (bash-style)
+  extracting archives: select the archive with Space, then run the built-in
+    "extract" plugin (needs nnn-plugins installed), or just exit nnn and run
+    tar/unzip/7z manually on the file
+  install plugins for extract/preview support:
+    sudo pacman -S nnn
+    sh -c "$(curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs)"
+
+19. dwm — white/light theme patch
+cd ~/.local/src/dwm
+# edit config.h:
+static const char col_gray1[] = "#000000";
+static const char col_gray2[] = "#000000";
+static const char col_gray3[] = "#ffffff";
+static const char col_gray4[] = "#000000";
+static const char col_cyan[]  = "#ffffff";
+static const char *colors[][3] = {
+	[SchemeNorm] = { "#ffffff", "#000000", "#000000" },
+	[SchemeSel]  = { "#000000", "#ffffff", "#ffffff" },
+};
+static const unsigned int borderpx = 2;
+sudo make clean install
+
+20. Neovim
+sudo pacman -S neovim
+echo 'export EDITOR=nvim' >> ~/.bashrc
+source ~/.bashrc
+# ~/.config/nvim/init.lua:
+vim.opt.number = true
+
+21. Neovim <-> Firefox integration
+# add to ~/.config/nvim/init.lua:
+vim.keymap.set("n", "gx", function()
+  local url = vim.fn.expand("<cfile>")
+  vim.fn.jobstart({ "firefox", url }, { detach = true })
+end, { desc = "Open link under cursor in Firefox" })
+# usage: cursor on a URL, press gx -> opens in Firefox
+vim.keymap.set("n", "<leader>fx", function()
+  local file = vim.fn.expand("%:p")
+  vim.fn.jobstart({ "firefox", file }, { detach = true })
+end, { desc = "Open current file in Firefox" })
+
+22. Steam
+sudo nano /etc/pacman.conf
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+sudo pacman -Syu
+sudo pacman -S steam
+steam
+
+23. Sober
+sudo pacman -S flatpak
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install flathub org.vinegarhq.Sober
+flatpak run org.vinegarhq.Sober
+flatpak install flathub org.freedesktop.Platform.GL.nvidia-580-126-09
+sudo pacman -S vulkan-radeon vulkan-tools
+flatpak update
+
+
+24. VM
+sudo pacman -S qemu-full virt-manager libvirt dnsmasq bridge-utils
+sudo systemctl enable --now libvirtd
+sudo usermod -aG libvirt $(whoami)
+# reboot, then manage VMs via virt-manager (GUI) or virsh (CLI)
+virsh list --all
+virsh start <vm-name>
+virsh shutdown <vm-name>
+usage:
+  virt-manager        - GUI: click "Create a New Virtual Machine", pick an ISO, follow
+                        the wizard to set RAM/CPU/disk, easiest way to set up a new VM
+  virsh list --all    - shows every VM you've created and whether it's running or off
+  virsh start <name>  - boots a VM by name (get the name from "virsh list --all")
+  virsh shutdown <name> - sends a graceful shutdown signal (like pressing the power button)
+  virsh destroy <name>  - force-stops a VM immediately (like pulling the plug, use if
+                        shutdown hangs)
+  virsh console <name>  - attach to a VM's text console directly from the terminal
+                        (useful for headless VMs with no display)
