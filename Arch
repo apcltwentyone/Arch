@@ -51,9 +51,13 @@ sudo pacman -S xorg-server xorg-xinit git base-devel libx11 libxft libxinerama l
 su
 pacman -S sudo
 git clone https://git.suckless.org/st
-cd st && sudo make clean install && cd ..
+cd st
+sudo make clean install
+cd ..
 git clone https://git.suckless.org/dwm
-cd dwm && sudo make clean install && cd ..
+cd dwm 
+sudo make clean install 
+cd ..
 nano ~/.xinitrc
 exec dwm
 
@@ -179,7 +183,8 @@ usage: nnn is keyboard-driven, no mouse needed
     sh -c "$(curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs)"
 
 19. dwm — white/light theme patch
-cd ~/.local/src/dwm
+cd dwm
+sudo nano config.h
 # edit config.h:
 static const char col_gray1[] = "#000000";
 static const char col_gray2[] = "#000000";
@@ -197,9 +202,8 @@ sudo make clean install
 sudo pacman -S neovim
 echo 'export EDITOR=nvim' >> ~/.bashrc
 source ~/.bashrc
-# ~/.config/nvim/init.lua:
-vim.opt.number = true
-
+mkdir -p ~/.config/nvim
+echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 21. Neovim <-> Firefox integration
 # add to ~/.config/nvim/init.lua:
 vim.keymap.set("n", "gx", function()
