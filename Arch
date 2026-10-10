@@ -216,25 +216,9 @@ vim.keymap.set("n", "<leader>fx", function()
   vim.fn.jobstart({ "firefox", file }, { detach = true })
 end, { desc = "Open current file in Firefox" })
 
-22. Steam
-sudo nano /etc/pacman.conf
-[multilib]
-Include = /etc/pacman.d/mirrorlist
-sudo pacman -Syu
-sudo pacman -S steam
-steam
-
-23. Sober
-sudo pacman -S flatpak
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install flathub org.vinegarhq.Sober
-flatpak run org.vinegarhq.Sober
-flatpak install flathub org.freedesktop.Platform.GL.nvidia-580-126-09
-sudo pacman -S vulkan-radeon vulkan-tools
-flatpak update
 
 
-24. VM
+22. VM
 sudo pacman -S qemu-full virt-manager libvirt dnsmasq bridge-utils
 sudo systemctl enable --now libvirtd
 sudo usermod -aG libvirt $(whoami)
@@ -252,3 +236,5 @@ usage:
                         shutdown hangs)
   virsh console <name>  - attach to a VM's text console directly from the terminal
                         (useful for headless VMs with no display)
+23.Musical
+sudo pacman -S reaper
