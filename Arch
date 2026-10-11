@@ -145,19 +145,18 @@ usage:
   --list-ctrls      - shows every adjustable setting (brightness, contrast, exposure, etc.)
                       and its current value/range, so you know what's tunable before setting it
 
-17. Screenshot
+17. Screenshot 
 sudo pacman -S maim
-maim screenshot.png
-maim -s selection.png
-usage:
-  maim screenshot.png  - captures the whole screen instantly, saves to current folder
-  maim -s selection.png - crosshair cursor appears, click+drag to select an area,
-                          release to capture just that area
-  maim -s | xclip -selection clipboard -t image/png  - capture a selection straight to
-                          clipboard instead of a file (needs xclip: sudo pacman -S xclip)
-  bind these to a keybind in dwm's config.h for a proper screenshot hotkey
+maim screenshort
+maim -s screenshort
+maim ~/namefolder/name.png
+maim -s ~/namefolder/name.png
+sudo pacman -S feh
+cd namefloder
+feh name.png
 
-18. File explorer + archive tools
+
+18. File explorer
 sudo pacman -S tar zip unzip p7zip
 sudo pacman -S nnn
 nnn
