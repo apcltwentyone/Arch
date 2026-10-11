@@ -335,3 +335,66 @@ patchelf --set-interpreter ./ld.so ./binary_file
 4. Angr
 pip install angr
 python solve.py
+
+25. AI Agent
+1.Aider
+yay -S aider
+aider
+
+2.Shell-GPT
+yay -S shell-gpt
+sgpt --shell
+
+3.Opencode
+yay -S opencode-bin
+opencode
+
+4.OpenInterpreter
+pip install open-interpreter
+interpreter
+
+5.Claude CLI
+npm install -g @anthropic-ai/claude-code
+
+26.Programer Laguaue
+Setup
+sudo pacman -S base-devel python rustup ccache nasm gdb valgrind clang
+rustup default stable
+rustup component add rust-analyzer
+
+Compile
+1.Python
+python script.py
+
+2.C
+gcc -O2 main.c -o main && ./main
+
+3.c++
+g++ -std=c++20 main.cpp -o main && ./main
+
+4.Rsut
+cargo new app && cd app && cargo run
+rustc main.rs -o main && ./main
+
+5.Assembly
+nasm -f elf64 main.asm -o main.o && ld main.o -o main && ./main
+
+Debug
+1.GDB Debugger
+gdb ./main
+
+2.Valgrind Check
+valgrind --leak-check=full ./main
+
+4. Neovim Keybindings
+:w – Save file
+
+:q – Quit
+
+gd – Go to definition (LSP)
+
+K – Show documentation/type info
+
+:term – Open integrated terminal
+
+Ctrl+\ then n – Exit terminal insert mode
