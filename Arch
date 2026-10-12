@@ -153,10 +153,4 @@ source ~/.bashrc
 mkdir -p ~/.config/nvim
 echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 
-20. Firefox
-sudo pacman -S firefox
-
-21.sudo pacman -S --noconfirm qemu-base
-sda
-sys
-
+20. Firefo
