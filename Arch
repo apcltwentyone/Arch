@@ -122,11 +122,7 @@ usage:
   @DEFAULT_AUDIO_SOURCE@           - same shorthand but for the microphone/input
   bind these commands to keyboard shortcuts in dwm's config.h for physical volume keys
 
-15. Browser
-sudo pacman -S firefox
-firefox
-
-16. Webcam + video
+15. Webcam + video
 sudo pacman -S v4l-utils ffmpeg
 ffplay -f v4l2 -i /dev/video0
 ffplay -f v4l2 -video_size 1280x720 -framerate 30 -i /dev/video0
@@ -145,7 +141,7 @@ usage:
   --list-ctrls      - shows every adjustable setting (brightness, contrast, exposure, etc.)
                       and its current value/range, so you know what's tunable before setting it
 
-17. Screenshot 
+16. Screenshot 
 sudo pacman -S maim
 maim screenshort
 maim -s screenshort
@@ -156,7 +152,7 @@ cd namefloder
 feh name.png
 
 
-18. File explorer
+17. File explorer
 sudo pacman -S tar zip unzip p7zip
 sudo pacman -S nnn
 nnn
@@ -181,7 +177,7 @@ usage: nnn is keyboard-driven, no mouse needed
     sudo pacman -S nnn
     sh -c "$(curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs)"
 
-19. dwm — white/light theme patch
+18. dwm — white/light theme patch
 cd dwm
 sudo nano config.h
 edit config.h:
@@ -197,203 +193,11 @@ static const char *colors[][3] = {
 static const unsigned int borderpx = 2;
 sudo make clean install
 
-20. Neovim
+19. Neovim
 sudo pacman -S neovim
 echo 'export EDITOR=nvim' >> ~/.bashrc
 source ~/.bashrc
 mkdir -p ~/.config/nvim
 echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
-21. Neovim <-> Firefox integration
-add to ~/.config/nvim/init.lua:
-vim.keymap.set("n", "gx", function()
-  local url = vim.fn.expand("<cfile>")
-  vim.fn.jobstart({ "firefox", url }, { detach = true })
-end, { desc = "Open link under cursor in Firefox" })
-usage: cursor on a URL, press gx -> opens in Firefox
-vim.keymap.set("n", "<leader>fx", function()
-  local file = vim.fn.expand("%:p")
-  vim.fn.jobstart({ "firefox", file }, { detach = true })
-end, { desc = "Open current file in Firefox" })
 
-22. VM Windows LFS
-QEMU/KVM setup on Arch Linux
-sudo pacman -S qemu-full virt-manager libvirt dnsmasq bridge-utils wget curl
-sudo systemctl enable --now libvirtd
-sudo usermod -aG libvirt $(whoami)
 
-Create VM directories and storage pools
-mkdir -p ~/VM_ISOS ~/LFS_VM
-qemu-img create -f qcow2 ~/LFS_VM/lfs-disk.qcow2 50G
-qemu-img create -f qcow2 ~/VM_ISOS/win-disk.qcow2 60G
-
-CLI VM Management via virsh
-virsh list --all
-virsh start <vm-name>
-virsh shutdown <vm-name>
-virsh destroy <vm-name>
-virsh console <vm-name>
-
-Windows & LFS Installation Workflow inside VM:
-1. Run virt-manager GUI to provision and boot ISOs easily:
-virt-manager
-
-2. Inside LFS VM, prepare partitions and fetch sources:
-export LFS=/mnt/lfs
-sudo mkdir -pv $LFS
-sudo mount -v -t ext4 /dev/sdb2 $LFS
-sudo pacman -S base-devel bison file flex gawk m4 patch texinfo wget
-sudo mkdir -v $LFS/sources
-sudo chmod -v a+wt $LFS/sources
-wget --input-file=wget-list --continue --directory-prefix=$LFS/sources
-23.Musical
-sudo pacman -S reaper
-
-24.Sec Tools
-Memory
-1. GDB + Pwndbg / GEF
-sudo pacman -S gdb python-pip
-git clone https://github.com/pwndbg/pwndbg
-cd pwndbg
-./setup.sh
-
-gdb ./binary_file
-2. Pwntools
-sudo pacman -S python-pwntools
-pip install pwntools
-python exploit.py
-
-3. Checksec
-sudo pacman -S checksec
-checksec --file=./binary_file
-
-4. ROPgadget / Ropper
-sudo pacman -S ropgadget
-yay -S ropper
-ROPgadget --binary ./binary_file
-ropper --file ./binary_file
-
-5. One_Gadget
-sudo pacman -S ruby
-sudo gem install one_gadget
-one_gadget ./libc.so.6
-
-6. Ghidra
-sudo pacman -S ghidra
-ghidra
-
-7. Radare2 & Cutter
-sudo pacman -S radare2 cutter
-r2 ./binary_file
-cutter
-
-8. Metasploit Framework
-sudo pacman -S metasploit
-msfdb init
-msfconsole
-
-9. Impacket
-sudo pacman -S python-impacket
-impacket-psexec
-impacket-secretsdump
-
-Network & Web
-1. Nmap
-sudo pacman -S nmap
-nmap -sV -sC <target_ip>
-
-2. Wireshark
-sudo pacman -S wireshark-qt
-sudo usermod -aG wireshark $USER
-wireshark
-
-3. Hydra
-sudo pacman -S hydra
-hydra -l user -P wordlist.txt <target_ip> ssh
-
-4. John The Ripper
-sudo pacman -S john
-john --wordlist=wordlist.txt hash.txt
-
-5. Hashcat
-sudo pacman -S hashcat
-hashcat -m 0 -a 0 hash.txt wordlist.txt
-
-Recommended Extra Tools
-1. Burp Suite
-sudo pacman -S burpsuite
-burpsuite
-
-2. Gobuster
-sudo pacman -S gobuster
-gobuster dir -u http://<target_ip> -w wordlist.txt
-
-3. Patchelf
-sudo pacman -S patchelf
-patchelf --set-interpreter ./ld.so ./binary_file
-
-4. Angr
-pip install angr
-python solve.py
-
-25. AI Agent
-1.Aider
-yay -S aider
-aider
-
-2.Shell-GPT
-yay -S shell-gpt
-sgpt --shell
-
-3.Opencode
-yay -S opencode-bin
-opencode
-
-4.OpenInterpreter
-pip install open-interpreter
-interpreter
-
-5.Claude CLI
-npm install -g @anthropic-ai/claude-code
-
-26.Programer Laguaue
-Setup
-sudo pacman -S base-devel python rustup ccache nasm gdb valgrind clang
-rustup default stable
-rustup component add rust-analyzer
-
-Compile
-1.Python
-python script.py
-
-2.C
-gcc -O2 main.c -o main && ./main
-
-3.c++
-g++ -std=c++20 main.cpp -o main && ./main
-
-4.Rsut
-cargo new app && cd app && cargo run
-rustc main.rs -o main && ./main
-
-5.Assembly
-nasm -f elf64 main.asm -o main.o && ld main.o -o main && ./main
-
-Debug
-1.GDB Debugger
-gdb ./main
-
-2.Valgrind Check
-valgrind --leak-check=full ./main
-
-4. Neovim Keybindings
-:w – Save file
-
-:q – Quit
-
-gd – Go to definition (LSP)
-
-K – Show documentation/type info
-
-:term – Open integrated terminal
-
-Ctrl+\ then n – Exit terminal insert mode
