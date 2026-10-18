@@ -71,22 +71,8 @@ sudo pacman -S noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-jetbrains-mono-ner
 fc-cache -fv
 startx
 
-11. Multi-monitor + Thai/English keyboard
-xrandr | grep connected
-xrandr --output HDMI-1 --auto --right-of eDP-1
+11. Thai/English keyboard
 setxkbmap -layout us,th -option grp:caps_toggle
-exec dwm
-
-12. NVIDIA driver
-sudo pacman -Syu
-sudo pacman -S nvidia-open nvidia-utils nvidia-settings
-sudo nano /etc/mkinitcpio.conf
-MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)
-sudo mkinitcpio -P
-sudo nano /etc/default/grub
-GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet nvidia-drm.modeset=1"
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-sudo reboot
 
 13. Bluetooth
 sudo pacman -S bluez bluez-utils
@@ -153,4 +139,5 @@ source ~/.bashrc
 mkdir -p ~/.config/nvim
 echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 
-20. Firefo
+20. Firefox
+sudo pacman -S firefox
