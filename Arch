@@ -12,11 +12,6 @@ All Partition Type Normal
 Write yes
 quit
 
-
-
-
-
-
 3. Format & mount
 mkfs.fat -F32 /dev/nvme0n1p1
 mkswap /dev/nvme0n1p2
