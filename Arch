@@ -1,5 +1,4 @@
-Arch Linux + dwm
-
+Arch My Set
 1. Connect to Wi-F
 iwctl
 station wlan0 connect "SSID"
@@ -7,7 +6,16 @@ exit
 
 2. Partition the disk
 cfdisk /dev/nvme0n1
-Create: EFI 512M, Linux Swap 16G, Linux filesystem (rest). Write -> yes, then Quit.
+512M Type EFI
+16GB Type Swapon
+All Partition Type Normal
+Write yes
+quit
+
+
+
+
+
 
 3. Format & mount
 mkfs.fat -F32 /dev/nvme0n1p1
@@ -26,14 +34,16 @@ arch-chroot /mnt
 5. Base config
 ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime
 hwclock --systohc
-nano /etc/locale.gen   # uncomment en_US.UTF-8
+nano /etc/locale.gen
+uncomment en_US.UTF-8
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "myhostname" > /etc/hostname
 passwd
 useradd -m -G wheel -s /bin/bash myuser
 passwd myuser
-EDITOR=nano visudo   # uncomment %wheel ALL=(ALL) ALL
+EDITOR=nano visudo
+uncomment %wheel ALL=(ALL) ALL
 
 6. Bootloader
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
@@ -43,11 +53,11 @@ exit
 umount -R /mnt
 reboot
 
-7. After reboot network + X11
+7. After reboot network & X11
 nmcli device wifi connect "SSID" password "PASS"
 sudo pacman -S xorg-server xorg-xinit git base-devel libx11 libxft libxinerama libxrandr
 
-8. Build st + dwm
+8. Build st & dwm
 su
 pacman -S sudo
 git clone https://git.suckless.org/st
@@ -66,7 +76,7 @@ git clone https://aur.archlinux.org/paru.git
 cd paru
 makepkg -si
 
-10. Fonts + test X
+10. Fonts & test X
 sudo pacman -S noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-jetbrains-mono-nerd
 fc-cache -fv
 startx
@@ -74,11 +84,11 @@ startx
 11. Thai/English keyboard
 setxkbmap -layout us,th -option grp:caps_toggle
 
-13. Bluetooth
+12. Bluetooth
 sudo pacman -S bluez bluez-utils
 sudo systemctl enable --now bluetooth
 
-14. Audio PipeWire
+13. Audio PipeWire
 sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
 wpctl status
@@ -89,7 +99,7 @@ wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 wpctl set-mute @DEFAULT_AUDIO_SINK@ 1
 wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
 
-15. Webcam + video
+14. Webcam & video
 sudo pacman -S v4l-utils ffmpeg
 ffplay -f v4l2 -i /dev/video0
 ffplay -f v4l2 -video_size 1280x720 -framerate 30 -i /dev/video0
@@ -99,7 +109,7 @@ v4l2-ctl --device=/dev/video0 --list-ctrls
 v4l2-ctl --device=/dev/video0 --set-ctrl=brightness=50
 v4l2-ctl --device=/dev/video0 --set-ctrl=contrast=30
 
-16. Screenshot 
+15. Screenshot & Open Wallpaper
 sudo pacman -S maim
 maim screenshort
 maim -s screenshort
@@ -110,12 +120,12 @@ cd namefloder
 feh name.png
 
 
-17. File explorer
+16. File explorer
 sudo pacman -S tar zip unzip p7zip
 sudo pacman -S nnn
 nnn
 
-18. dwm — white/light theme patch
+17. dwm — white/light theme patch
 cd dwm
 sudo nano config.h
 edit config.h:
@@ -131,7 +141,7 @@ static const char *colors[][3] = {
 static const unsigned int borderpx = 2;
 sudo make clean install
 
-19. Neovim
+18. Neovim
 sudo pacman -S neovim
 echo 'export EDITOR=nvim' >> ~/.bashrc
 source ~/.bashrc
@@ -139,5 +149,6 @@ source ~/.bashrc
 mkdir -p ~/.config/nvim
 echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 
-20. Firefox
+19. Firefox
 sudo pacman -S firefox
+firefox
