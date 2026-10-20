@@ -148,7 +148,7 @@ echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 19. Firefox
 sudo pacman -S firefox
 firefox
-yay -S firefox-extension-tridactyl-native
+paru -S firefox-extension-tridactyl-native
 Extension Tridactyl From About:Addons
 mkdir -p ~/.config/tridactyl
 echo 'set editorcmd st -e nvim' >> ~/.config/tridactyl/tridactylrc
