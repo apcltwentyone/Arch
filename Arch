@@ -148,9 +148,15 @@ echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 19. Firefox
 sudo pacman -S firefox
 firefox
+yay -S firefox-extension-tridactyl-native
+Extension Tridactyl From About:Addons
+mkdir -p ~/.config/tridactyl
+echo 'set editorcmd st -e nvim' >> ~/.config/tridactyl/tridactylrc
 
 20.Time Date
-timedatectl stastus
+sudo systemctl enable --now systemd-timesyncd
+timedatectl set-ntp true
+timedatectl status
 
 21.Battery
 ls /sys/class/power_supply/
