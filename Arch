@@ -148,3 +148,12 @@ echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 19. Firefox
 sudo pacman -S firefox
 firefox
+
+20.Time Date
+timedatectl stastus
+
+21.Battery
+cat /sys/class/power_supply/BAT0/capacity
+cat /sys/class/power_supply/BAT0/status
+
+
