@@ -27,10 +27,11 @@ genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
 5. Base config
-ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime
+ln -sf /usr/share/zoneinfo/Continent/City /etc/localtime
 hwclock --systohc
 nano /etc/locale.gen
-uncomment en_US.UTF-8
+Uncomment en_US.UTF-8
+Uncomment Desired Language
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "myhostname" > /etc/hostname
