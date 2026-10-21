@@ -145,13 +145,10 @@ source ~/.bashrc
 mkdir -p ~/.config/nvim
 echo 'vim.opt.number = true' > ~/.config/nvim/init.lua
 
-19. Firefox
-sudo pacman -S firefox
-firefox
-paru -S firefox-extension-tridactyl-native
-Extension Tridactyl From About:Addons
-mkdir -p ~/.config/tridactyl
-echo 'set editorcmd st -e nvim' >> ~/.config/tridactyl/tridactylrc
+19. Browser
+sudo pacman -S qutebrowser
+sudo pacman -S python-adblock pdfjs
+qutebrowser
 
 20.Time Date
 sudo systemctl enable --now systemd-timesyncd
