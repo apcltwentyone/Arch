@@ -163,4 +163,8 @@ ls /sys/class/power_supply/
 cat /sys/class/power_supply/BAT0/capacity
 cat /sys/class/power_supply/BAT0/status
 
+22.Reaper
+yay -S reaper
+reaper
+
 
